@@ -10,11 +10,19 @@ on:
 
 jobs:
   nomequalquer:
-    name: Passos de Validação
+    name: Build and Push
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 21
+          cache: 'npm'
+        - run: npm install
+        - run: npm run dev
 
      
