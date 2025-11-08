@@ -22,7 +22,8 @@ jobs:
         with:
           node-version: 21
           cache: 'npm'
-        - run: npm install
-        - run: npm run dev
+          
+      - run: npm install
+      - run: npm run dev
 
      
