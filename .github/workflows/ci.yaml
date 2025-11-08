@@ -37,10 +37,18 @@ jobs:
           username: ${{ vars.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build Docker image
-        run: docker build -t ${{ vars.DOCKERHUB_USERNAME }}/minha-app-node:${{ steps.generate_id.outputs.sha }} .
+      - name: Docker Build and Push
+        uses: docker/build-push-action@v5
+        with:
+          push: true
+          tags: ${{ vars.DOCKERHUB_USERNAME }}/minha-app-node:${{ steps.generate_id.outputs.sha }}, ${{ vars.DOCKERHUB_USERNAME }}/minha-app-node:latest
 
-      - name: Push Docker image
-        run: docker push ${{ vars.DOCKERHUB_USERNAME }}/minha-app-node:${{ steps.generate_id.outputs.sha }}
+      # - name: Build Docker image
+      #   run: docker build -t ${{ vars.DOCKERHUB_USERNAME }}/minha-app-node:${{ steps.generate_id.outputs.sha }} .
+
+      # - name: Push Docker image
+      #   run: docker push ${{ vars.DOCKERHUB_USERNAME }}/minha-app-node:${{ steps.generate_id.outputs.sha }}
+
+      
 
      
