@@ -4,9 +4,11 @@ on:
   push:
     branches:
       - main
-  pull_request:
-    branches:
-      - main
+
+# GitHub Actions Permissions use awsume role to access AWS resources securely
+permissions:
+  id-token: write
+  contents: read
 
 jobs:
   nomequalquer:
@@ -31,17 +33,27 @@ jobs:
           SHA=$(echo $GITHUB_SHA | head -c7)
           echo "sha=$SHA" >> $GITHUB_OUTPUT
       
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ vars.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      # - name: Login to Docker Hub
+      #   uses: docker/login-action@v3
+      #   with:
+      #     username: ${{ vars.DOCKERHUB_USERNAME }}
+      #     password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Docker Build and Push
-        uses: docker/build-push-action@v5
+      # - name: Docker Build and Push
+      #   uses: docker/build-push-action@v5
+      #   with:
+      #     push: true
+      #     tags: ${{ vars.DOCKERHUB_USERNAME }}/minha-app-node:${{ steps.generate_id.outputs.sha }}, ${{ vars.DOCKERHUB_USERNAME }}/minha-app-node:latest
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
         with:
-          push: true
-          tags: ${{ vars.DOCKERHUB_USERNAME }}/minha-app-node:${{ steps.generate_id.outputs.sha }}, ${{ vars.DOCKERHUB_USERNAME }}/minha-app-node:latest
+          role-to-assume: ${{ secrets.ROLE }}
+          aws-region: us-east-2
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
 
       # - name: Build Docker image
       #   run: docker build -t ${{ vars.DOCKERHUB_USERNAME }}/minha-app-node:${{ steps.generate_id.outputs.sha }} .
